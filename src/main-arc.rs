@@ -1,11 +1,10 @@
-use std::sync::{Arc,
-                Mutex};
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 use std::f64::consts::PI;
 
 const TARGET: u32 = 10;
-const GUESS : u32 = 100;
+const GUESS : u32 = 1000;
 
 struct Leibniz {
     x: f64,
@@ -37,7 +36,7 @@ fn inspector(state: Arc<Mutex<Leibniz>>) {
             s.ticks = s.ticks + s.ticks/10;
         }
         println!("{} {} {} {}", s.ticks, s.tocks, s.d, PI - 4.0 * s.x);
-        s.tocks=0
+        s.tocks=0;
     }
 }
 

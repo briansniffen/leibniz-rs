@@ -1,0 +1,33 @@
+## Experiments with Rust and lockless concurrency
+
+I just tried out Python 3's async/await concurrency and [blogged about
+it](https://weblog.evenmere.org/posts/2019-10-15-python-asyncio.html).
+I've heard that Rust is great for the same sort of thinking about
+concurrency, and I've been meaning to learn it for a year.  This is my
+first and second Rust program---please be kind!
+
+Right now I'm running into a problem I don't understand:
+`leibniz-atomic` uses the crossbeam library for atomic updates.  It
+runs fast, produces outputs with low jitter around the 1 Hz timer, and
+generally seems fine.  It's frustrating that a third of the lines in
+the file are about the `atomic` API, but that's not actually
+*incredibly* surprising; I'd get the same sort of thing from STM in
+lots of languages.  I do worry that I'm exposed to subtle bugs from
+the ordering of atomic updates---but enough about `leibniz-atomic`.
+
+The `leibniz-arc` binary, from `main-arc.rs`, uses the standard Rust
+library for atomic, reference counted references to mutual-exclusion
+locks (ARC, Mutex).  It also produces correct output---but it slows
+down!  If I change line 19 from `for _ in 1..s.ticks {` to `for _ in
+1..100`, it runs fine.  If I change the iteration limit to `1000`, it
+runs very slowly.  When I let it control itself, it starts okay and
+walks itself into a deadlock.
+
+What am I missing?  I feel like this ought to be something simple:
+maybe I'm not properly writing back to `s.tocks` in line 39 (but if
+so, why does everything from `computer` make it over to
+`inspector`?).  Maybe I'm making it allocate a zillion times by not
+making the state struct mutable---but I think `Mutex` provides
+internal mutability without me writing `mut` anywhere.
+
+Akamai Rustaceans: what am I missing?
