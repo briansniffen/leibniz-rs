@@ -1,0 +1,16 @@
+[package]
+name = "leibniz"
+version = "0.1.0"
+authors = ["Brian Sniffen <bts@evenmere.org>"]
+edition = "2018"
+
+[dependencies]
+crossbeam = "~0.7.2"
+
+[[bin]]
+name = "leibniz-arc"
+path = "src/main-arc.rs"
+
+[[bin]]
+name = "leibniz-atomic"
+path = "src/main-atomic.rs"
