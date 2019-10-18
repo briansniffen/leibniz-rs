@@ -1,17 +1,19 @@
 extern crate crossbeam;
 
-use std::thread as sthread;
-use crossbeam::{thread, atomic::AtomicCell};
-use std::time::Duration;
+use crossbeam::{atomic::AtomicCell, thread};
 use std::f64::consts::PI;
+use std::thread as sthread;
+use std::time::{Duration, SystemTime};
 
 const TARGET: u32 = 10;
-const GUESS : u32 = 2500000;
+const GUESS: u32 = 2500000;
 
-fn computer(xr: &AtomicCell<f64>,
-            dr: &AtomicCell<f64>,
-            ticks: &AtomicCell<u32>,
-            tocks: &AtomicCell<u32>) {
+fn computer(
+    xr: &AtomicCell<f64>,
+    dr: &AtomicCell<f64>,
+    ticks: &AtomicCell<u32>,
+    tocks: &AtomicCell<u32>,
+) {
     loop {
         let mut x = xr.load();
         let mut d = dr.load();
@@ -28,12 +30,16 @@ fn computer(xr: &AtomicCell<f64>,
     }
 }
 
-fn inspector(xr: &AtomicCell<f64>,
-             dr: &AtomicCell<f64>,
-             ticksr: &AtomicCell<u32>,
-             tocksr: &AtomicCell<u32>) {
+fn inspector(
+    xr: &AtomicCell<f64>,
+    dr: &AtomicCell<f64>,
+    ticksr: &AtomicCell<u32>,
+    tocksr: &AtomicCell<u32>,
+) {
+    let mut old_d = 1.0;
+    let mut now = SystemTime::now();
     loop {
-        sthread::sleep(Duration::from_millis(1000));        
+        sthread::sleep(Duration::from_millis(1000));
         let x = xr.load();
         let d = dr.load();
         let tocks = tocksr.load();
@@ -41,9 +47,9 @@ fn inspector(xr: &AtomicCell<f64>,
         if tocks <= TARGET {
             ticksr.store(ticks / 2);
         } else if tocks > TARGET {
-            ticksr.store(ticks + ticks/10);
+            ticksr.store(ticks + ticks / 10);
         }
-        println!("{} {} {} {}", ticks, tocks, d, PI - 4.0*x);
+        println!("{:?} {} {} {} {}", now.elapsed().unwrap(), ticks, tocks, d - old_d, PI - 4.0 * x);
         tocksr.store(0);
     }
 }
@@ -54,11 +60,12 @@ fn main() {
     let d = AtomicCell::new(1.0);
     let ticks = AtomicCell::new(GUESS);
     let tocks = AtomicCell::new(0);
-    
+
     thread::scope(|s| {
         s.spawn(|_| {
-            computer(&x,&d,&ticks,&tocks);
+            computer(&x, &d, &ticks, &tocks);
         });
-        inspector(&x,&d,&ticks,&tocks);
-    }).unwrap();
+        inspector(&x, &d, &ticks, &tocks);
+    })
+    .unwrap();
 }
