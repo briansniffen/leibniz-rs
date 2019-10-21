@@ -30,7 +30,7 @@ fn inspector(state: Arc<Mutex<Leibniz>>) {
     let mut old_d = 1.0;
     let now = SystemTime::now();
     loop {
-        thread::sleep(Duration::from_millis(1000));
+        thread::sleep(Duration::from_secs(1));
         let mut s = state.lock().unwrap();
         if s.tocks <= TARGET {
             s.ticks /= 2;

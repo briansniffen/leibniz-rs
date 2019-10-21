@@ -39,7 +39,7 @@ fn inspector(
     let mut old_d = 1.0;
     let mut now = SystemTime::now();
     loop {
-        sthread::sleep(Duration::from_millis(1000));
+        sthread::sleep(Duration::from_secs(1));
         let x = xr.load();
         let d = dr.load();
         let tocks = tocksr.load();
