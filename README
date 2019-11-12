@@ -30,4 +30,4 @@ so, why does everything from `computer` make it over to
 making the state struct mutable---but I think `Mutex` provides
 internal mutability without me writing `mut` anywhere.
 
-Akamai Rustaceans: what am I missing?
+Experienced Rustaceans: what am I missing?
